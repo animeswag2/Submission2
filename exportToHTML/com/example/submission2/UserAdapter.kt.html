@@ -1,0 +1,80 @@
+<html>
+<head>
+<title>UserAdapter.kt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #000080; font-weight: bold;}
+.s1 { color: #000000;}
+.s2 { color: #808080; font-style: italic;}
+.s3 { color: #0000ff;}
+</style>
+</head>
+<body bgcolor="#ffffff">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+UserAdapter.kt</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span>com.example.submission2
+
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
+import com.example.submission2.databinding.UserItemsBinding
+
+<span class="s0">class </span>UserAdapter : RecyclerView.Adapter&lt;UserAdapter.UserViewHolder&gt;() {
+    private <span class="s0">val </span>mData = ArrayList&lt;UserItems&gt;()
+    private lateinit <span class="s0">var </span>onItemClickCallback: OnItemClickCallback
+
+    <span class="s0">fun </span>setOnItemClickCallBack(onItemClickCallBack: OnItemClickCallback){
+        <span class="s0">this</span>.onItemClickCallback = onItemClickCallBack
+    }
+
+    <span class="s0">fun </span>setData(items: ArrayList&lt;UserItems&gt;) {
+        mData.clear()
+        mData.addAll(items)
+        notifyDataSetChanged()
+    }
+    override <span class="s0">fun </span>onCreateViewHolder(viewGroup: ViewGroup, position: Int): UserAdapter.UserViewHolder {
+        <span class="s0">val </span>mView = LayoutInflater.from(viewGroup.context).inflate(R.layout.user_items, viewGroup, <span class="s0">false</span>)
+        <span class="s0">return </span>UserViewHolder(mView)
+
+    }
+
+    override <span class="s0">fun </span>onBindViewHolder(userViewHolder: UserViewHolder, position: Int) {
+       userViewHolder.bind(mData[position])
+
+        userViewHolder.itemView.setOnClickListener{
+            onItemClickCallback.onItemClicked(mData[userViewHolder.adapterPosition])
+        }
+    }
+
+    override <span class="s0">fun </span>getItemCount(): Int = mData.size
+
+    inner <span class="s0">class </span>UserViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private <span class="s0">val </span>binding = UserItemsBinding.bind(itemView)
+        <span class="s0">fun </span>bind(userItems: UserItems) {
+            with(itemView){
+                binding.tvItemName.text = userItems.name
+                binding.tvItemUsername.text = userItems.username
+                <span class="s2">//binding.imgItemAvatar.setImageResource(userItems.avatar)</span>
+                Glide.with(itemView.context)
+                    .load(userItems.avatar)
+                    .apply(RequestOptions().override(<span class="s3">55</span>, <span class="s3">55</span>))
+                    .into(binding.imgItemAvatar)
+
+                setOnClickListener{onItemClickCallback.onItemClicked(userItems)}
+            }
+        }
+    }
+
+    <span class="s0">interface </span>OnItemClickCallback{
+        <span class="s0">fun </span>onItemClicked(userItems: UserItems)
+    }
+
+}</pre>
+</body>
+</html>

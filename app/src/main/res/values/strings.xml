@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Submission1</string>
+    <string name="name">Nama User</string>
+    <string name="username">Username</string>
+    <string name="location">Location</string>
+    <string name="user_username">Username</string>
+    <string name="user_name">Name</string>
+    <string name="james_liong2000_gmail_com">james.liong2000@gmail.com</string>
+    <string name="myemail">a1721790@bangkit.academy</string>
+    <string name="mahasiswa">Mahasiswa</string>
+    <string name="full_name">James Ng</string>
+    <string name="company">Company</string>
+    <string name="follower">Follower</string>
+    <string name="following">Following</string>
+    <string name="repository">Repository</string>
+    <string name="object_received">Object</string>
+    <string name="insert_username">Inset Username</string>
+    <string name="id_insert_username">Insert Username</string>
+    <string name="search">Cari</string>
+
+</resources>

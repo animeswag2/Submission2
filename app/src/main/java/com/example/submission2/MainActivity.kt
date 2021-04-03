@@ -6,7 +6,9 @@ import android.service.autofill.UserData
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.submission2.databinding.ActivityMainBinding
 import com.loopj.android.http.AsyncHttpClient
 import com.loopj.android.http.AsyncHttpResponseHandler
@@ -16,20 +18,46 @@ import org.json.JSONObject
 class MainActivity : AppCompatActivity() {
     private lateinit var adapter: UserAdapter
     private lateinit var binding: ActivityMainBinding
+    private var list: ArrayList<UserItems> =  arrayListOf()
+
+    private lateinit var mainViewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        adapter = UserAdapter()
+        binding.rvUser.setHasFixedSize(true)
+        mainViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(MainViewModel::class.java)
+        showRecyclerList()
+    }
+
+    private fun showRecyclerList() {
         adapter.notifyDataSetChanged()
+        adapter = UserAdapter()
 
         binding.rvUser.layoutManager = LinearLayoutManager(this)
         binding.rvUser.adapter = adapter
-        binding.rvUser.setHasFixedSize(true)
+
+        setDataToAdapter()
+
+        adapter.setOnItemClickCallBack(object : UserAdapter.OnItemClickCallback {
+            override fun onItemClicked(data: UserItems) {
+                showSelectedUser(data)
+            }
+        })
     }
 
+    private fun setDataToAdapter(){
+        mainViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(MainViewModel::class.java)
+
+        mainViewModel.getUsers().observe(this, { userItems ->
+            if (userItems != null) {
+                adapter.setData(userItems)
+                showLoading(false)
+            }
+        })
+    }
 
     private fun showSelectedUser(user: UserItems) {
         val moveIntent = Intent(this@MainActivity, HalamanDetail::class.java).apply {
@@ -47,43 +75,3 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-    /*
-    fun setUser(username: String) {
-        val listItems = ArrayList<UserItems>()
-        val client = AsyncHttpClient()
-        val url = "https://api.github.com/search/users?q=${username}"
-        client.addHeader("Authorization", "token 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")
-        client.addHeader("User-Agent", "request")
-        client.get(url, object : AsyncHttpResponseHandler() {
-            override fun onSuccess(statusCode: Int, headers: Array<Header>, responseBody: ByteArray) {
-               val listUser = ArrayList<UserItems>()
-                val result = String(responseBody)
-                Log.d(TAG, result)
-                try {
-                    //parsing json
-                    val responseObject = JSONObject(result)
-                    val items = responseObject.getJSONArray("items")
-                    for (i in 0 until items.length()) {
-                        val item = items.getJSONObject(i)
-                        val username = item.getString("login")
-                        val avatar = item.getString("avatar_url")
-                        val user = UserItems()
-                        user.username = username
-                        user.avatar = avatar
-                        listUser.add(user)
-                    }
-                    //set data ke adapter
-                    adapter.setData(listItems)
-                    showLoading(false)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-
-            override fun onFailure(statusCode: Int, headers: Array<Header>, responseBody: ByteArray, error: Throwable) {
-                Log.d("onFailure", error.message.toString())
-            }
-        })
-    }
-   }
-     */
